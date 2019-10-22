@@ -5,10 +5,11 @@ import Typography from '@material-ui/core/Typography';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
-import Avatar from '@material-ui/core/Avatar';
+//import Avatar from '@material-ui/core/Avatar';
 import Chip from '@material-ui/core/Chip';
 import Button from '@material-ui/core/Button';
 import TextField from '@material-ui/core/TextField';
+import {CTX} from './Store';
 
 const useStyles = makeStyles(theme => ({
     root: {
@@ -40,22 +41,31 @@ const useStyles = makeStyles(theme => ({
 export default function Dashboard(){
     const classes = useStyles();
     const [textValue, changeTextValue] = React.useState('');
+    
 
+    // CTX context store 
+    const [allChats] = React.useContext(CTX);
+
+    const topics = Object.keys(allChats);
+
+    //local state
+    const [activeTopic, changeActiveTopic] = React.useState(topics[0])
+    
     return (
         <div className ="dash">
             <Paper className={classes.root}>
                 <Typography variant="h4" component="h4">
-                Astounding Chat
+                AT Chat
                 </Typography>
                 <Typography variant="h5" component="h5">
-                Main body of a chat app
+                {activeTopic}
                 </Typography>
                 <div className={classes.flex}>
                     <div className={classes.topicsWindow}>
                         <List component="nav" aria-label="secondary mailbox folders">
                             {
-                                ['oneMessage','twoMessage', 'threeMessage'].map( (topic) => (
-                                    <ListItem button key={topic}>
+                                topics.map( (topic, j) => (
+                                    <ListItem onClick={e=>changeActiveTopic(e.target.innerText)} button key={topic}>
                                         <ListItemText primary={topic} />
                                     </ListItem>    
                                 ))
@@ -64,10 +74,10 @@ export default function Dashboard(){
                     </div>    
                     <div className={classes.chatWindow}>
                         {
-                            [{user:'user1', text:'text1'},{user:'user2', text:'text2'},{user:'user3', text:'text3'}].map( (chat, i) => (
-                                <div button key={chat}>
-                                    <Chip label={chat.user} variant="outlined" key={i} />       
-                                    <Typography variant='p' > {chat.text} </Typography>                            
+                            allChats[activeTopic].map( (chat, i) => (
+                                <div className={classes.flex} key={i}>
+                                    <Chip label={chat.from} variant="outlined" />       
+                                    <Typography variant="body1" gutterBottom>  {chat.msg} </Typography>                            
                                 </div>    
                             ))
                         }
